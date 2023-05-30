@@ -3,9 +3,6 @@ import 'package:dotenv/dotenv.dart' as dotenv;
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shelf/shelf.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import '../database.dart';
-
-
 
 class UserService {
   late DbCollection _collection;
@@ -19,8 +16,8 @@ class UserService {
       dotenv.load();
 
       final mongodbUri = dotenv.env['MONGODB_URI'];
-      
-      var db = await Db.create('$mongodbUri');                   
+
+      var db = await Db.create('$mongodbUri');
       await db.open();
       _collection = db.collection('users');
     } catch (e) {
@@ -48,9 +45,10 @@ class UserService {
 
       final user = await _collection.findOne({'email': json['email']});
 
-      if (user != null && user['password'] == json['password']){
+      if (user != null && user['password'] == json['password']) {
         final jwtSecret = dotenv.env['jwtSecret'];
-        final token = JwtDecoder.encode({'email': user['email'],'_id' : user['_id']}, jwtSecret);
+        final token = JwtDecoder.encode(
+            {'email': user['email'], '_id': user['_id']}, jwtSecret);
         return token;
       }
     } catch (e) {
