@@ -24,7 +24,7 @@ class UserService {
       print(e);
     }
   }
-
+  
   // -------------  USER  ----------------
 
   Future create(Request req) async {
