@@ -3,8 +3,11 @@ import 'package:dotenv/dotenv.dart' as dotenv;
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shelf/shelf.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:password_dart/password_dart.dart';
+import '../security/security_service_imp.dart';
 
 class UserService {
+  final SecurityService _securityService = SecurityService();
   late DbCollection _collection;
 
   UserService() {
@@ -32,7 +35,32 @@ class UserService {
       var result = await req.readAsString();
       Map<String, dynamic> json = jsonDecode(result);
 
+      final userFound = await _collection.findOne({'email' : json['email']});
+
+      if(userFound != null){
+        return 1;
+      }
+      
+      final hash = Password.hash(json['password']!, PBKDF2());
+      json['password'] = hash;
+
       await _collection.insertOne(json);
+
+      final pipeline = [
+        {
+          '\$match': {'email': json['email']}
+        },
+        {
+          '\$project': {
+            'name': 1,
+            'email': 1,
+            'idade': 1
+          }
+        }
+      ];
+
+      final userCreate = await _collection.aggregateToStream(pipeline).toList();
+      return userCreate;
     } catch (e) {
       print(e);
     }
@@ -45,11 +73,10 @@ class UserService {
 
       final user = await _collection.findOne({'email': json['email']});
 
-      if (user != null && user['password'] == json['password']) {
-        final jwtSecret = dotenv.env['jwtSecret'];
-        final token = JwtDecoder.encode(
-            {'email': user['email'], '_id': user['_id']}, jwtSecret);
-        return token;
+      if (user != null && Password.verify(json['password'], user['password'])) {
+        print(user['_id'].toString());
+        var jwt = await _securityService.generateJWT(user['_id'].toString());
+        return jsonEncode({'nome': user['name'],'email': user['email'],'token': jwt});
       }
     } catch (e) {
       print(e);
@@ -75,6 +102,8 @@ class UserService {
       if (json['nome']) users?['nome'] = json['nome'];
       if (json['email']) users?['email'] = json['email'];
       if (json['idade']) users?['idade'] = json['idade'];
+
+      return users;
     } catch (e) {
       print(e);
     }

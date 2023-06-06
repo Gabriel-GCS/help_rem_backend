@@ -19,3 +19,4 @@ dependencies:
   dotenv: ^3.0.0
   dart_jsonwebtoken: ^2.8.1
   jwt_decoder: ^2.0.1
+  password_dart: ^2.0.1
