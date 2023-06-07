@@ -130,6 +130,9 @@ class UserService {
       }, {
         '\$addToSet': {"entes_queridos": friend}
       });
+
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -150,9 +153,7 @@ class UserService {
 
       final result = await _collection.aggregateToStream(pipeline).toList();
 
-      print(result);
-      // var users = await _collection.find({'_id': ObjectId.parse(user)});
-      // return users;
+      return result;
     } catch (e) {
       print(e);
     }
@@ -169,6 +170,9 @@ class UserService {
       }, {
         '\$push': {"entes_queridos.\$.data": json}
       });
+
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -200,6 +204,9 @@ class UserService {
       }, {
         '\$addToSet': {"remedios": remedio}
       });
+
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -220,7 +227,8 @@ class UserService {
 
       final result = await _collection.aggregateToStream(pipeline).toList();
 
-      print(result);
+      return result;
+
     } catch (e) {
       print(e);
     }
@@ -237,6 +245,9 @@ class UserService {
       }, {
         '\$set': {"remedios.\$.data": json}
       });
+      
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -268,6 +279,9 @@ class UserService {
       }, {
         '\$addToSet': {"diarios": diario}
       });
+
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -288,7 +302,8 @@ class UserService {
 
       final result = await _collection.aggregateToStream(pipeline).toList();
 
-      print(result);
+      return result;
+
     } catch (e) {
       print(e);
     }
@@ -305,6 +320,9 @@ class UserService {
       }, {
         '\$set': {"diarios.\$.data": json}
       });
+
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -336,6 +354,9 @@ class UserService {
       }, {
         '\$addToSet': {"atividades_fisicas": atividade}
       });
+
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -356,7 +377,8 @@ class UserService {
 
       final result = await _collection.aggregateToStream(pipeline).toList();
 
-      print(result);
+      return result;
+
     } catch (e) {
       print(e);
     }
@@ -373,6 +395,9 @@ class UserService {
       }, {
         '\$set': {"atividades_fisicas.\$.data": json}
       });
+
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -404,6 +429,9 @@ class UserService {
       }, {
         '\$addToSet': {"alimentacao": alimento}
       });
+
+      return 'ok';
+
     } catch (e) {
       print(e);
     }
@@ -424,7 +452,8 @@ class UserService {
 
       final result = await _collection.aggregateToStream(pipeline).toList();
 
-      print(result);
+      return result;
+
     } catch (e) {
       print(e);
     }
@@ -441,6 +470,9 @@ class UserService {
       }, {
         '\$set': {"alimentacao.\$.data": json}
       });
+
+      return 'ok';
+      
     } catch (e) {
       print(e);
     }
