@@ -22,6 +22,14 @@ class SecurityService {
 
     try {
       return JWT.verify(token, SecretKey('$key'));
+    } on JWTInvalidException {
+      return null;
+    } on JWTExpiredException {
+      return null;
+    } on JWTNotActiveException {
+      return null;
+    } on JWTUndefinedException {
+      return null;
     } catch (e) {
       return null;
     }

@@ -74,7 +74,6 @@ class UserService {
       final user = await _collection.findOne({'email': json['email']});
 
       if (user != null && Password.verify(json['password'], user['password'])) {
-        print(user['_id'].toString());
         var jwt = await _securityService.generateJWT(user['_id'].toString());
         return jsonEncode({'nome': user['name'],'email': user['email'],'token': jwt});
       }
@@ -193,8 +192,9 @@ class UserService {
 
   // -------------  REMEDIOS  ----------------
 
-  Future createRemedy(Request req, String user) async {
+  Future createRemedy(Request req) async {
     try {
+      final user = "648e0a8cac000ff708731172";
       final customId = ObjectId().toString();
       var result = await req.readAsString();
       Map<String, dynamic> json = jsonDecode(result);
@@ -212,8 +212,9 @@ class UserService {
     }
   }
 
-  Future getAllRemedy(String user) async {
+  Future getAllRemedy() async {
     try {
+      final user = "648e0a8cac000ff708731172";
       final pipeline = [
         {
           '\$match': {'_id': ObjectId.parse(user)}

@@ -65,8 +65,8 @@ class ServeHandler {
 
     // -------------  REMEDIOS  ----------------
 
-    router.post('/remedy/create/<user>', (Request req, String user) async {
-      final response = await _userService.createRemedy(req, user);
+    router.post('/remedy/create', (Request req) async {
+      final response = await _userService.createRemedy(req);
       return Response.ok(jsonEncode(response));
     });
 
@@ -75,8 +75,8 @@ class ServeHandler {
       return Response.ok(jsonEncode(response));
     });
 
-    router.get('/remedy/listAll/<user>', (Request req, String user) async {
-      final response = await _userService.getAllRemedy(user);
+    router.get('/remedy/listAll', (Request req) async {
+      final response = await _userService.getAllRemedy();
       return Response.ok(jsonEncode(response));
     });
 
