@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'package:dotenv/dotenv.dart' as dotenv;
 import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shelf/shelf.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:password_dart/password_dart.dart';
 import '../security/security_service_imp.dart';
+import '../security/token_jwt.dart';
 
 class UserService {
   final SecurityService _securityService = SecurityService();
+  final JWTService _jwtService = JWTService();
   late DbCollection _collection;
 
   UserService() {
@@ -92,12 +93,12 @@ class UserService {
     }
   }
 
-  Future update(Request req, String user) async {
+  Future update(Request req) async {
     try {
       var result = await req.readAsString();
-      var obId = ObjectId.parse(user);
+      final user = await _jwtService.verifyJWT(req);
       Map<String, dynamic> json = jsonDecode(result);
-      var users = await _collection.findOne(where.eq("_id", obId));
+      var users = await _collection.findOne(where.eq("_id", user));
       if (json['nome']) users?['nome'] = json['nome'];
       if (json['email']) users?['email'] = json['email'];
       if (json['idade']) users?['idade'] = json['idade'];
@@ -108,8 +109,9 @@ class UserService {
     }
   }
 
-  Future delete(String user) async {
+  Future delete(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       await _collection.remove(where.eq("_id", user));
     } catch (e) {
       print(e);
@@ -118,14 +120,15 @@ class UserService {
 
   // -------------  ENTES QUERIDOS  ----------------
 
-  Future createFriend(Request req, String user) async {
+  Future createFriend(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       final customId = ObjectId().toString();
       var result = await req.readAsString();
       Map<String, dynamic> json = jsonDecode(result);
       final friend = {'id': customId, 'data': json};
       await _collection.updateOne({
-        '_id': ObjectId.parse(user)
+        '_id': user
       }, {
         '\$addToSet': {"entes_queridos": friend}
       });
@@ -137,11 +140,12 @@ class UserService {
     }
   }
 
-  Future getAllFriends(String user) async {
+  Future getAllFriends(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       final pipeline = [
         {
-          '\$match': {'_id': ObjectId.parse(user)}
+          '\$match': {'_id': user}
         },
         {
           '\$project': {
@@ -194,13 +198,14 @@ class UserService {
 
   Future createRemedy(Request req) async {
     try {
-      final user = "648e0a8cac000ff708731172";
+      final user = await _jwtService.verifyJWT(req);
       final customId = ObjectId().toString();
       var result = await req.readAsString();
       Map<String, dynamic> json = jsonDecode(result);
       final remedio = {'id': customId, 'data': json};
+      print(user);
       await _collection.updateOne({
-        '_id': ObjectId.parse(user)
+        '_id': user
       }, {
         '\$addToSet': {"remedios": remedio}
       });
@@ -212,12 +217,36 @@ class UserService {
     }
   }
 
-  Future getAllRemedy() async {
+  Future getAllRemedy(Request req) async {
     try {
-      final user = "648e0a8cac000ff708731172";
+      final user = await _jwtService.verifyJWT(req);
       final pipeline = [
         {
-          '\$match': {'_id': ObjectId.parse(user)}
+          '\$match': {'_id': user}
+        },
+        {
+          '\$project': {
+            'remedios': 1, // Include the specific field
+          }
+        }
+      ];
+
+      final result = await _collection.aggregateToStream(pipeline).toList();
+
+      return result;
+
+    } catch (e) {
+      print(e);
+    }
+  }
+
+   Future testjwt(Request req) async {
+    try {
+      final user = await _jwtService.verifyJWT(req);
+
+      final pipeline = [
+        {
+          '\$match': {'_id': user}
         },
         {
           '\$project': {
@@ -269,14 +298,15 @@ class UserService {
 
   // -------------  DIARIOS  ----------------
 
-  Future createDaily(Request req, String user) async {
+  Future createDaily(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       final customId = ObjectId().toString();
       var result = await req.readAsString();
       Map<String, dynamic> json = jsonDecode(result);
       final diario = {'id': customId, 'data': json};
       await _collection.updateOne({
-        '_id': ObjectId.parse(user)
+        '_id': user
       }, {
         '\$addToSet': {"diarios": diario}
       });
@@ -288,11 +318,12 @@ class UserService {
     }
   }
 
-  Future getAllDaily(String user) async {
+  Future getAllDaily(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       final pipeline = [
         {
-          '\$match': {'_id': ObjectId.parse(user)}
+          '\$match': {'_id': user}
         },
         {
           '\$project': {
@@ -344,14 +375,15 @@ class UserService {
 
   // -------------  ATIVIDADES FISICAS  ----------------
 
-  Future createActivity(Request req, String user) async {
+  Future createActivity(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       final customId = ObjectId().toString();
       var result = await req.readAsString();
       Map<String, dynamic> json = jsonDecode(result);
       final atividade = {'id': customId, 'data': json};
       await _collection.updateOne({
-        '_id': ObjectId.parse(user)
+        '_id': user
       }, {
         '\$addToSet': {"atividades_fisicas": atividade}
       });
@@ -363,11 +395,12 @@ class UserService {
     }
   }
 
-  Future getAllActivity(String user) async {
+  Future getAllActivity(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       final pipeline = [
         {
-          '\$match': {'_id': ObjectId.parse(user)}
+          '\$match': {'_id': user}
         },
         {
           '\$project': {
@@ -419,14 +452,15 @@ class UserService {
 
   // -------------  ALIMENTACAO  ----------------
 
-  Future createFood(Request req, String user) async {
+  Future createFood(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       final customId = ObjectId().toString();
       var result = await req.readAsString();
       Map<String, dynamic> json = jsonDecode(result);
       final alimento = {'id': customId, 'data': json};
       await _collection.updateOne({
-        '_id': ObjectId.parse(user)
+        '_id': user
       }, {
         '\$addToSet': {"alimentacao": alimento}
       });
@@ -438,11 +472,12 @@ class UserService {
     }
   }
 
-  Future getAllFood(String user) async {
+  Future getAllFood(Request req) async {
     try {
+      final user = await _jwtService.verifyJWT(req);
       final pipeline = [
         {
-          '\$match': {'_id': ObjectId.parse(user)}
+          '\$match': {'_id': user}
         },
         {
           '\$project': {

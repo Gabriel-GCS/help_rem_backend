@@ -25,8 +25,8 @@ class ServeHandler {
       return Response.ok(login);
     });
 
-    router.put('/update/<user>', (Request req, String user) async {
-      final userUpdated = await _userService.update(req, user);
+    router.put('/update/<user>', (Request req) async {
+      final userUpdated = await _userService.update(req);
       return Response.ok(jsonDecode(userUpdated));
     });
 
@@ -35,15 +35,15 @@ class ServeHandler {
       return Response.ok(jsonEncode(users));
     });
 
-    router.delete('/delete/<user>', (Request req, String user) async {
-      await _userService.delete(user);
+    router.delete('/delete/<user>', (Request req) async {
+      await _userService.delete(req);
       return Response.ok('ok');
     });
 
     // -------------  ENTES QUERIDOS  ----------------
 
-    router.post('/friend/create/<user>', (Request req, String user) async {
-      final createFriend = await _userService.createFriend(req, user);
+    router.post('/friend/create/<user>', (Request req) async {
+      final createFriend = await _userService.createFriend(req);
       return Response.ok(jsonEncode(createFriend));
     });
 
@@ -52,8 +52,8 @@ class ServeHandler {
       return Response.ok(jsonEncode(response));
     });
 
-    router.get('/friend/listAll/<user>', (Request req, String user) async {
-      final response = await _userService.getAllFriends(user);
+    router.get('/friend/listAll/<user>', (Request req) async {
+      final response = await _userService.getAllFriends(req);
       return Response.ok(jsonEncode(response));
     });
 
@@ -76,7 +76,12 @@ class ServeHandler {
     });
 
     router.get('/remedy/listAll', (Request req) async {
-      final response = await _userService.getAllRemedy();
+      final response = await _userService.getAllRemedy(req);
+      return Response.ok(jsonEncode(response));
+    });
+
+    router.get('/testjwt', (Request req) async {
+      final response = await _userService.testjwt(req);
       return Response.ok(jsonEncode(response));
     });
 
@@ -88,8 +93,8 @@ class ServeHandler {
 
     // -------------  DIARIOS  ----------------
 
-    router.post('/diary/create/<user>', (Request req, String user) async {
-      final response = await _userService.createDaily(req, user);
+    router.post('/diary/create/<user>', (Request req) async {
+      final response = await _userService.createDaily(req);
       return Response.ok(jsonEncode(response));
     });
 
@@ -98,8 +103,8 @@ class ServeHandler {
       return Response.ok(jsonEncode(response));
     });
 
-    router.get('/diary/listAll/<user>', (Request req, String user) async {
-      final response = await _userService.getAllDaily(user);
+    router.get('/diary/listAll/<user>', (Request req) async {
+      final response = await _userService.getAllDaily(req);
       return Response.ok(jsonEncode(response));
     });
 
@@ -110,8 +115,8 @@ class ServeHandler {
 
     // -------------  ATIVIDADES FISICAS  ----------------
 
-    router.post('/activity/create/<user>', (Request req, String user) async {
-      final response = await _userService.createActivity(req, user);
+    router.post('/activity/create/<user>', (Request req) async {
+      final response = await _userService.createActivity(req);
       return Response.ok(jsonEncode(response));
     });
 
@@ -121,8 +126,8 @@ class ServeHandler {
       return Response.ok(jsonEncode(response));
     });
 
-    router.get('/activity/listAll/<user>', (Request req, String user) async {
-      final response = await _userService.getAllActivity(user);
+    router.get('/activity/listAll/<user>', (Request req) async {
+      final response = await _userService.getAllActivity(req);
       return Response.ok(jsonEncode(response));
     });
 
@@ -134,8 +139,8 @@ class ServeHandler {
 
     // -------------  ALIMENTACAO  ----------------
 
-    router.post('/food/create/<user>', (Request req, String user) async {
-      final response = await _userService.createFood(req, user);
+    router.post('/food/create/<user>', (Request req) async {
+      final response = await _userService.createFood(req);
       return Response.ok(jsonEncode(response));
     });
 
@@ -144,8 +149,8 @@ class ServeHandler {
       return Response.ok(jsonEncode(response));
     });
 
-    router.get('/food/listAll/<user>', (Request req, String user) async {
-      final response = await _userService.getAllFood(user);
+    router.get('/food/listAll/<user>', (Request req) async {
+      final response = await _userService.getAllFood(req);
       return Response.ok(jsonEncode(response));
     });
 
